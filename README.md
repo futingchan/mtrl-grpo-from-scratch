@@ -1,31 +1,76 @@
-# GRPO from scratch, on a 2017 GPU
+# Multi-turn Reinforcement Learning: GRPO from Scratch
 
-I kept reading writeups of GRPO and RLVR ("RL with verifiable rewards") and
-nodding along without owning the mechanics. The fix for that, for me, is always
-the same: build the thing. So I trained a 0.5B parameter model with a
-hand-written GRPO loop on the only GPU I own — a GTX 1080 Ti — and built a
-small dashboard that animates what the loop is actually doing.
+This repo is a working, from-scratch implementation of RLVR — reinforcement
+learning with *verifiable rewards* — applied to a small language model, plus
+a browser dashboard that animates what the algorithm is actually doing at
+each step.
 
-This repo is the whole story: the task, the reward, the ~230-line training
-loop, the dashboard, and the numbers I got.
+The goal is to demonstrate the full loop end to end, with nothing hidden
+behind a framework: prompts go in, the policy samples a *group* of
+completions, a deterministic verifier scores each one, advantages are
+computed relative to the group, and the policy is updated — on hardware you
+can actually afford.
 
-**Try the dashboard first** (no GPU, no install — it's a static page):
+![the RL loop, animated](docs/loop-demo.gif)
 
-```bash
-python3 -m http.server 4173 -d viz/dist    # → http://localhost:4173
+*The dashboard's first panel: a toy policy over 8 completions, iterating
+sample → reward → advantage → update. Watch the real thing at
+`python3 -m http.server 4173 -d viz/dist` → http://localhost:4173*
+
+## The concepts
+
+**RLVR.** The expensive part of RLHF has always been the reward model: you
+train a second network to judge outputs, then pray it isn't exploitable.
+RLVR sidesteps that for tasks where correctness is *checkable by code* —
+math answers, test-passing code, schema-conformant extraction. A
+deterministic grader can't be sweet-talked, so the reward signal stays
+honest. This repo's task is extraction-shaped: given a document, emit
+`{summary, todos[]}` as strict JSON, graded entirely by code.
+
+**GRPO.** Group Relative Policy Optimization (from
+[DeepSeekMath](https://arxiv.org/abs/2402.03300), popularized by
+[DeepSeek-R1](https://arxiv.org/abs/2501.12948)). PPO needs a learned critic
+to estimate a baseline; GRPO throws the critic away and uses the other
+samples of the *same prompt* as the baseline instead:
+
+```
+A_i = (r_i − mean(r_group)) / std(r_group)      # advantage, per prompt group
+loss = −mean(min(ratio·A, clip(ratio, 1±ε)·A)) + β·KL(π_θ, π_ref)
 ```
 
-Five panels: the RL loop animated end-to-end, a gridworld you can watch a
-tabular policy learn, a PPO/GRPO/DPO side-by-side on the same batch of
-completions, a reward-shaping slider, and the real training curve from the run
-in this repo.
+Completions that beat their siblings get pushed up; losers get pushed down.
+No value network, no GAE — which matters, because a critic for a 0.5B model
+is another 0.5B of things to go wrong.
 
-## The task
+**Multi-turn.** Single-turn RL trains one-shot completions. *Multi-turn* RL
+trains trajectories: the model calls tools, reads results, and tries again —
+with environment-produced tokens masked out of the loss (the policy is only
+trained on tokens it generated). This repo trains the single-turn core, but
+the plumbing is built for the multi-turn version: the env contract in
+[`train/envs/sim_env.py`](train/envs/sim_env.py) follows the OpenEnv-style
+`reset`/`step` interface, and `data/harbor_tasks/` exports the same graded
+tasks in [Harbor](https://www.harborframework.com) sandbox format for the
+tool-using variant.
 
-I wanted a task where the reward is *mostly checkable by code* — that's the
-whole premise of RLVR, and it's what lets you skip training a reward model.
-The task: given a document (email thread, meeting notes, chat log), emit
-strict JSON:
+## What the demo shows
+
+The dashboard (`viz/`, React+TS, fully static and deterministic) has five
+panels:
+
+1. **The loop** (the GIF above) — a 1-d toy policy visibly concentrating
+   probability mass on high-reward completions.
+2. **Gridworld** — RL with no LLM at all: a tabular policy you can watch
+   learn. The grounding case.
+3. **PPO vs GRPO vs DPO** — the *same* batch of completions and rewards fed
+   through all three update rules, with sliders for clip ε and KL β.
+4. **Reward shaping** — reward = correctness − λ·tokens; slide λ and watch
+   which completions win.
+5. **The real run** — the actual metrics from the training run in this repo
+   (`viz/dist/run.json` is the genuine output, not a mock).
+
+## The task and the reward
+
+Input: a document (email thread, meeting notes, chat log). Output contract:
 
 ```json
 {
@@ -34,89 +79,39 @@ strict JSON:
 }
 ```
 
-The reward ([`train/reward/core.py`](train/reward/core.py)) is a weighted sum
-of things a grader can verify deterministically:
+[`train/reward/core.py`](train/reward/core.py) is a weighted sum of
+verifiable terms — schema validity, todo recall/precision against gold
+(matched by token-F1), owner accuracy, a length budget, and a hallucination
+penalty for emitting owners or dates absent from the source. It's written
+like a compiler because it *is* the attack surface: precision is gated on
+recall so emitting zero todos can't farm a free point, and every term has an
+adversarial unit test.
 
-- **schema** — does it parse, exactly `{summary, todos}`, right types, valid
-  enum, ISO dates. Unparseable ⇒ total reward 0. Format first, content second.
-- **todo recall** — fraction of gold todos found, matched greedily by
-  multiset token-F1 ≥ 0.5. This is the dominant term (weight 2.0).
-- **todo precision** — gated on recall > 0, so emitting *zero* todos can't
-  score a free point on precision. First of several anti-hacking details;
-  the reward is the only thing the policy can exploit, so it's written and
-  tested like a compiler.
-- **owner accuracy** — only over matched todos.
-- **length** — linear decay past 60 words.
-- **hallucination penalty** — any `owner`/`due` the model emits that doesn't
-  appear in the source document's entity list counts against it.
+The dataset is synthetic (`data/gen_docs.py`) — gold todos are known because
+the generator injects them. 2k train / 200 eval, checked in as parquet.
 
-The dataset is synthetic (`data/gen_docs.py`, 2k train / 200 eval, checked in
-as parquet). Gold todos are known because the generator *injects* them —
-you can't grade recall against documents whose todos you don't know.
+## The training loop
 
-## The loop
+[`train/tier_a/grpo_minimal.py`](train/tier_a/grpo_minimal.py) — ~230 lines,
+no framework between you and the tensors:
 
-[`train/tier_a/grpo_minimal.py`](train/tier_a/grpo_minimal.py) is the point of
-the repo — GRPO with no framework between me and the tensors:
+- Group-standardized advantages (G=4 completions per prompt)
+- Per-token clipped surrogate objective
+- k3 KL estimator (`exp(x) − x − 1`) against a reference policy obtained by
+  disabling the LoRA adapter on the same weights — no second model in VRAM
+- One honest caveat worth understanding: with a single gradient step per
+  batch, `logp_old == logp_new`, so the ratio is identically 1 and the clip
+  never fires. The machinery is real and unit-tested; it only *bites* once
+  you reuse batches — which is the next experiment.
 
-```python
-gen = model.generate(prompt, num_return_sequences=G, do_sample=True)   # G rollouts per prompt
-rewards = reward_fn(doc, completions)                                  # [B*G], from the verifier
-adv = (rewards - group_mean) / (group_std + eps)                       # per-prompt group baseline
-ratio = exp(logp_new - logp_old)                                       # per-token
-loss = -mean(min(ratio*adv, clip(ratio, 1±ε)*adv)) + β * KL(logp_new, logp_ref)
-```
-
-Things I had to actually understand to write this:
-
-- **Why GRPO needs no critic.** PPO learns a value function to estimate "how
-  much better than expected was this action." GRPO just uses the other
-  samples of the *same prompt* as the baseline — advantage is standardized
-  within the group of G rollouts. No second model, no GAE, no critic to
-  debug. The cost: you need G>1 samples per prompt, and if all G get the
-  same reward the advantage is ~0 and the step teaches nothing.
-- **The reference model is free if you use LoRA.** `logp_ref` comes from the
-  same weights with `model.disable_adapter()` — the frozen base model —
-  instead of keeping a second copy in VRAM. On an 11 GB card that matters.
-- **The KL estimator matters.** The code uses the k3 estimator,
-  `exp(logp_ref − logp_new) − (logp_ref − logp_new) − 1`, which is unbiased
-  and — unlike the naive log-ratio — can't go negative, so it doesn't
-  inject noise with the wrong sign into the gradient.
-- **Honest caveat:** this loop does one gradient step per batch, so
-  `logp_old == logp_new` and the PPO clip is a no-op — ratio is 1
-  everywhere. The clip machinery is real and tested, but it only *bites*
-  once you do multiple epochs per batch or off-policy correction. I left it
-  in because the code is more instructive with it, and because step-1
-  correctness is what you verify against TRL anyway.
-
-There's also [`train/tier_a/grpo_trl.py`](train/tier_a/grpo_trl.py), the same
-config driven through TRL's `GRPOTrainer`, as a cross-check that my loop
+[`train/tier_a/grpo_trl.py`](train/tier_a/grpo_trl.py) runs the same task
+through TRL's `GRPOTrainer` as a cross-check that the hand-written loop
 produces the same learning curve.
-
-## Why a hand-written loop: the 1080 Ti constraint
-
-This part is half the reason the project exists. The card is Pascal,
-compute capability 6.1:
-
-- **vLLM is out** (needs ≥ 7.0/7.5 depending on version), which kills the
-  fast-rollout path every modern RL framework assumes.
-- **Current PyTorch wheels are out** — `torch 2.14.0+cu126` is the *last*
-  wheel line still shipping `sm_61` kernels; cu128 dropped Pascal in torch
-  2.8. `scripts/preflight.py` asserts this before training so you fail fast
-  instead of 40 minutes in.
-- **No bf16.** Pascal fp16 is supported but low-rate on GP102; amusingly the
-  fp16 matmul microbenchmark still beats fp32 on this card (2.3 ms vs
-  6.1 ms for a 2048³ matmul), but fp16 LoRA training with no bf16 fallback
-  is a stability gamble I didn't need — at 0.5B params, fp32 + LoRA fits in
-  ~9 GB. Boring choice, deliberately.
-
-So the fashionable stack (TRL + vLLM rollouts + bf16) was unavailable, and
-the unfashionable one turned out to be the better teacher anyway.
 
 ## Results
 
 300 steps, `Qwen2.5-0.5B-Instruct`, LoRA r=16, B=2 prompts × G=4
-completions, fp32, ~11 s/step — under an hour on the 1080 Ti:
+completions, fp32, ~11 s/step — under an hour of compute:
 
 | metric (32-doc eval) | before | after |
 |---|---|---|
@@ -124,41 +119,53 @@ completions, fp32, ~11 s/step — under an hour on the 1080 Ti:
 | todo recall (F1-match) | 0.11 | 0.44 |
 | mean reward | 0.69 | 3.36 |
 
-In-training `schema_ok` hits 1.0 around step 200 and stays there — the model
-learns "emit valid JSON" fast, then spends the rest of the run grinding out
-todo recall. That ordering is exactly what the format-vs-content split in
-the reward is supposed to produce, and watching it happen on the curve is
-more convincing than any blog post asserting it.
-
 ![training curves](docs/curves.png)
 
-Two more things the curves show: completion length drifts down (~190 → ~130
-tokens) as the schema converges — the model stops rambling once padding
-stops paying — and KL climbs to ~0.02 nats and plateaus, i.e. the policy
-moves but stays tethered to the base model. β=0.04 is doing its job.
+Three things worth noticing: `schema_ok` saturates by ~step 200 (format is
+learned fast, then the run grinds on content recall — exactly what the
+format/content reward split is designed to produce); completion length
+drifts from ~190 to ~130 tokens as rambling stops paying; and KL climbs to
+~0.02 nats then plateaus — the policy moves while staying tethered to the
+base model.
 
-Reproduce the eval numbers:
+## Running it
 
 ```bash
-uv run python -m train.tier_a.grpo_minimal --config configs/tier_a_grpo.yaml   # ~1 h on a 1080 Ti
-# or a 15-minute smell test: --set grpo.steps=50
+uv python install 3.12
+uv sync --extra tier-a
+uv run python scripts/preflight.py           # asserts GPU/torch/arch compatibility
+uv run pytest -q                             # reward, data, and loop unit tests
+
+uv run python -m train.tier_a.grpo_minimal --config configs/tier_a_grpo.yaml
+# short smell test: add --set grpo.steps=50
 uv run python scripts/plot_curves.py --runs runs/tier_a --copy-run-json viz/dist/run.json
 ```
 
-## What I'd do next / honest limitations
+Each run writes `metrics.jsonl`, `run.json` (dashboard panel-5 schema),
+`samples.jsonl`, `eval_before/after.json`, and LoRA checkpoints under
+`runs/<name>/`.
 
-- **The eval is small (n=32) and the data is synthetic.** Recall 0.28 is
-  real improvement, not a solved task — there's headroom, and a few
-  hand-written eval docs would make the number more meaningful.
-- **Single update per batch** (see caveat above). Next step is minibatch
-  reuse with real off-policy correction, which is where the clip earns its
-  keep.
-- **No judge term.** A second LM grading summary quality is the obvious
-  extension, and also the obvious reward-hacking surface; I kept it off.
-- **Tier B sketch:** the reward is stdlib-only and vendored into
-  `data/harbor_tasks/` so the *same grader* can run inside Harbor sandboxed
-  environments on a bigger GPU. Not wired to a trainer yet — that's the
-  multi-turn version of this project.
+**Hardware notes.** The reference run used a GTX 1080 Ti (Pascal, CC 6.1,
+11 GB). That's why there's no vLLM: it needs CC ≥ 7.x, and `torch
+2.14.0+cu126` is the last wheel line shipping `sm_61` kernels — pinned in
+`pyproject.toml`, asserted by `scripts/preflight.py`. Any GPU with ~11 GB
+and CC ≥ 6.1 works; newer cards can crank `num_generations` and `steps`.
+On CPU, run the smoke test in the Setup section below.
+
+**Deploying the dashboard.** `viz/dist/` is a static site — see
+[`deploy/`](deploy/README.md) for a one-command deploy to a free-tier cloud
+VM (Caddy, auto-HTTPS once you point a domain at it).
+
+## Honest limitations / what's next
+
+- Eval is small (n=32) and the data is synthetic — recall 0.44 is real
+  progress, not a solved task.
+- Single update per batch (see caveat above); minibatch reuse with real
+  off-policy correction is where the clip earns its keep.
+- No judge term — a second LM grading summary quality is the obvious
+  extension and the obvious reward-hacking surface. Deliberately off.
+- The multi-turn variant (Harbor sandboxes, tool calls, env-token masking)
+  is scaffolded but not yet wired to a trainer — that's part two.
 
 ## Repo map
 
@@ -166,38 +173,26 @@ uv run python scripts/plot_curves.py --runs runs/tier_a --copy-run-json viz/dist
 train/tier_a/grpo_minimal.py   hand-written GRPO loop (the core)
 train/tier_a/grpo_trl.py       same task through TRL's GRPOTrainer
 train/reward/core.py           stdlib-only verifiable reward
-train/envs/sim_env.py          single-step env + gridworld
+train/envs/sim_env.py          single-step env contract + gridworld
 data/gen_docs.py               synthetic doc/todo generator (+ Harbor export)
 viz/                           dashboard source (React+TS); dist/ is committed
 scripts/preflight.py           GPU/arch/pin assertions — run first
 scripts/plot_curves.py         metrics → curves + run.json for panel 5
-deploy/                        serve the dashboard on a free-tier cloud VM
+deploy/                        serve the dashboard on a free-tier VM
 docs/design.md                 design notes: constraints, tradeoffs, open questions
+docs/loop-demo.gif             the GIF above (captured from the real dashboard)
 ```
 
 ## References that were actually useful
 
 - [DeepSeekMath](https://arxiv.org/abs/2402.03300) — where GRPO comes from
-- [DeepSeek-R1](https://arxiv.org/abs/2501.12948) — RLVR working at scale
+- [DeepSeek-R1](https://arxiv.org/abs/2501.12948) — RLVR at scale
 - [PPO](https://arxiv.org/abs/1707.06347) · [DPO](https://arxiv.org/abs/2305.18290)
-- Jimmy Shi, [*a vision researcher's guide to PPO & GRPO*](https://yugeten.github.io/posts/2025/01/ppogrpo) — the clearest derivation I found
+- Jimmy Shi, [*a vision researcher's guide to PPO & GRPO*](https://yugeten.github.io/posts/2025/01/ppogrpo) — clearest derivation I found
 - Cameron Wolfe's [GRPO](https://cameronrwolfe.substack.com/p/grpo) and [GRPO tricks](https://cameronrwolfe.substack.com/p/grpo-tricks)
-- [TRL GRPOTrainer docs](https://huggingface.co/docs/trl/en/grpo_trainer) — for the cross-check path
-- [CUDA compute capability and why it matters](https://dev.to/maxvyaznikov/cuda-compute-capability-what-it-is-and-why-it-matters-for-ml-engineers-1mhg) — background for §hardware
+- [TRL GRPOTrainer](https://huggingface.co/docs/trl/en/grpo_trainer) · [TRL Harbor](https://huggingface.co/docs/trl/en/harbor) · [TRL OpenEnv](https://huggingface.co/docs/trl/en/openenv)
 
----
-
-Setup details, CPU smoke test, and preflight: see below.
-
-## Setup
-
-```bash
-uv python install 3.12
-uv sync --extra tier-a
-uv run python scripts/preflight.py           # strict: expects the 1080 Ti
-uv run python scripts/preflight.py --cpu-ok  # laptop-safe variant
-uv run pytest -q                             # reward + data + loop unit tests
-```
+## Setup details
 
 Data is checked in (`data/train.parquet`, `data/eval.parquet`). Regenerate:
 
@@ -216,8 +211,10 @@ uv run python -m train.tier_a.grpo_minimal --config configs/tier_a_grpo.yaml \
   --set data.eval_n=2 --device cpu
 ```
 
-Each run writes `metrics.jsonl`, `run.json` (dashboard panel-5 schema),
-`samples.jsonl`, `eval_before.json`, `eval_after.json`, and LoRA checkpoints
-under `runs/<name>/`.
+Dashboard dev/build:
+
+```bash
+cd viz && npm install && npm run test && npm run build
+```
 
 License: Apache-2.0.
