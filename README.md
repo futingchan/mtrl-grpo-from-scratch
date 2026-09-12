@@ -60,14 +60,27 @@ panels:
 
 1. **The loop** (the GIF above) — a 1-d toy policy visibly concentrating
    probability mass on high-reward completions.
+
 2. **Gridworld** — RL with no LLM at all: a tabular policy you can watch
    learn. The grounding case.
+
+   <img src="docs/panel-2-gridworld.png" width="720" alt="REINFORCE on gridworld">
+
 3. **PPO vs GRPO vs DPO** — the *same* batch of completions and rewards fed
    through all three update rules, with sliders for clip ε and KL β.
+   (Captured here with the real batch from the training run.)
+
+   <img src="docs/panel-3-update-comparison.png" width="720" alt="PPO vs GRPO vs DPO on one batch">
+
 4. **Reward shaping** — reward = correctness − λ·tokens; slide λ and watch
    which completions win.
+
+   <img src="docs/panel-4-reward-shaping.png" width="720" alt="reward shaping with lambda slider">
+
 5. **The real run** — the actual metrics from the training run in this repo
    (`viz/dist/run.json` is the genuine output, not a mock).
+
+   <img src="docs/panel-5-training-run.png" width="720" alt="real GRPO training curves">
 
 ## The task and the reward
 
