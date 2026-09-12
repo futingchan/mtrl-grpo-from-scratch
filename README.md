@@ -1,15 +1,11 @@
 # Multi-turn Reinforcement Learning: GRPO from Scratch
 
-This repo is a working, from-scratch implementation of RLVR — reinforcement
-learning with *verifiable rewards* — applied to a small language model, plus
-a browser dashboard that animates what the algorithm is actually doing at
-each step.
+This repo is a working, from-scratch implementation of RLVR (reinforcement
+learning with *verifiable rewards*) applied to a small language model. The code includes both a training recipe for RLVR and a browser dashboard that animates what the algorithm is doing at each step.
 
-The goal is to demonstrate the full loop end to end, with nothing hidden
-behind a framework: prompts go in, the policy samples a *group* of
+The goal is to demonstrate the full loop end to end, with minimal framework dependency, implement basic class from scatch if required to improve understanding. The flow is on a high-level: prompts go in, the policy samples a *group* of
 completions, a deterministic verifier scores each one, advantages are
-computed relative to the group, and the policy is updated — on hardware you
-can actually afford.
+computed relative to the group, and the policy is updated. This code excutes on my now 8 year old GPU with 11GB of RAM for a small model (Qwen2.5 5B instruct), you should be able to run this same code on larger models and with most modern commodity GPUs.
 
 ![the RL loop, animated](docs/loop-demo.gif)
 
