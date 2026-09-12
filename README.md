@@ -9,8 +9,8 @@ understanding. The flow, at a high level: prompts go in, the policy samples
 a *group* of completions, a deterministic verifier scores each one,
 advantages are computed relative to the group, and the policy is updated.
 This code executes on my now-8-year-old GPU with 11 GB of VRAM and a small
-model (Qwen2.5-0.5B-Instruct); the same code runs on larger models and any
-modern commodity GPU.
+model (Qwen2.5-0.5B-Instruct); the same code runs on larger models and most
+modern commodity hardware.
 
 ![the RL loop, animated](docs/loop-demo.gif)
 
@@ -147,7 +147,7 @@ Each run writes `metrics.jsonl`, `run.json` (dashboard panel-5 schema),
 `runs/<name>/`.
 
 **Hardware notes.** The reference run used a GTX 1080 Ti (Pascal, CC 6.1,
-11 GB). That's why there's no vLLM: it needs CC ≥ 7.x, and `torch
+11 GB). vLLM is a no-go there — it requires CC ≥ 7.x — and `torch
 2.14.0+cu126` is the last wheel line shipping `sm_61` kernels — pinned in
 `pyproject.toml`, asserted by `scripts/preflight.py`. Any GPU with ~11 GB
 and CC ≥ 6.1 works; newer cards can crank `num_generations` and `steps`.
@@ -159,34 +159,39 @@ VM (Caddy, auto-HTTPS once you point a domain at it).
 
 ## Where this goes next
 
-Honest limitations first: the eval set is small (n=32) and synthetic, the
-loop takes one gradient step per batch so the clip never actually fires, and
-there's no judge term for summary quality. Part two is where the interesting
-work is.
+Since part 1 is focused on concept understanding, the eval set is small
+(n=32) and synthetic, the loop takes one gradient step per batch so the clip
+never actually fires, and there's no judge term for summary quality. We will
+extend this demo with a real-world use case in Part 2.
 
-Part 2 turns this into a tool I actually want: I keep a large pile of notes —
-some handwritten (OCR'd in), some machine-written — and the tasks I care
-about are *summarize this*, *pull out the action items*, and *answer my
-question against these notes and show me which note it came from*. An
-end-to-end working version of that, trained with RL, is the next repo.
+Part 2 uses the same frame as part 1 but applied to an AI note-keeping app
+I started developing a week ago: I keep a large pile of notes — some
+human-written, some machine-written — and the tasks I care about are
+*summarize this*, *pull out the action items*, and *answer my question
+against these notes and show me which note it came from*. An end-to-end
+working version of that, trained with RL, is the next repo.
 
-The jump from here to there is mostly reuse, not reinvention — that's the
-point of building the pieces this way:
+On a high-level we will extend our current code by:
 
-- **The env becomes real.** `train/envs/sim_env.py` is a single-step shell
-  of the OpenEnv contract. Part 2 backs it with an actual notes API and
-  tools like `search_notes(query)`, `read_note(id)`, `cite(note_id)`. Now
-  an episode is a trajectory — the model learns *when* to search, what to
-  open, and when it has enough to answer. That's the "multi-turn" in the
-  title, finally earning its keep.
-- **The verifier generalizes.** Action-item recall is already graded here;
-  Q&A becomes "did it cite note IDs that exist, and do those notes contain
-  the answer" — still checkable by code, still no reward model needed.
-- **The hallucination penalty gets serious.** Citing a note that doesn't
-  exist is the failure mode that makes this class of app useless, and it's
-  exactly the kind of thing a verifiable reward trains away.
-- **Harbor task dirs stop being synthetic.** Same export format, real
-  corpus — the grader doesn't change, the tasks underneath it do.
+- **Making the environment real.** `train/envs/sim_env.py` is a single-step
+  shell of the OpenEnv `reset`/`step` contract. In part 2 it gets backed by
+  the notes app's actual API, with tools like `search_notes(query)`,
+  `read_note(id)`, `cite(note_id)`. An episode stops being one-shot and
+  becomes a trajectory — the model learns *when* to search, what to open,
+  and when it has enough to answer. That's the "multi-turn" in the title
+  earning its keep; tool results get env-masked out of the loss, so the
+  policy only trains on tokens it generated.
+- **Generalizing the verifier.** The grader in `train/reward/core.py`
+  already checks action-item recall; for Q&A the checkable signal becomes
+  "did it cite note IDs that exist, and do those notes contain the answer."
+  Still deterministic, still no reward model — the RLVR premise carries
+  over unchanged.
+- **Getting serious about the hallucination penalty.** Citing a note that
+  doesn't exist is the failure mode that makes this kind of app useless,
+  and it's exactly what a verifiable reward is good at training away.
+- **Swapping synthetic tasks for a real corpus.** The Harbor task export
+  (`data/harbor_tasks/`) keeps its format; the tasks underneath become real
+  notes instead of generated docs. Same grader, real data.
 
 ## Repo map
 
