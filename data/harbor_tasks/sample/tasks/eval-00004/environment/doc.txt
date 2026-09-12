@@ -1,0 +1,28 @@
+# SSO integration sync notes
+Date: 2026-09-14
+Attendees: Tom, Elena Petrova, Diego, Marcus Webb
+
+- Lost and found has accumulated three hoodies.
+- Dana: Triage open issues on Atlas migration by 2026-09-29 (low priority).
+- The SSO integration status page was green all week.
+- Sofia: Write release notes for Kestrel API (urgent).
+- Parking lot B will be resurfaced next week.
+- Tom shared photos from the offsite.
+- Dana: Fix the flaky test suite tests by 2026-09-28.
+- The Payments v2 mural in the lobby is almost finished.
+- Imani: Chase approvals for the mobile checkout onboarding doc by 2026-09-14 (low priority).
+- Priya: Archive the stale schema for SSO integration.
+- The fantasy football draft is scheduled for Thursday.
+- Kenji shared photos from the offsite.
+- The rooftop garden needs volunteers this Saturday.
+- Rosa shared photos from the offsite.
+- Elena Petrova shared photos from the offsite.
+- Sofia gave a lightning talk on sourdough starters.
+- The fantasy football draft is scheduled for Thursday.
+- The new espresso blend got mixed reviews.
+- The book club is reading a sci-fi novel this month.
+- Lunch is at noon tomorrow in the courtyard.
+- The onboarding revamp mural in the lobby is almost finished.
+- Bob is organizing a charity 5k in October.
+- Marcus Webb gave a lightning talk on sourdough starters.
+- Priya is organizing a charity 5k in October.

@@ -1,0 +1,8 @@
+[metadata]
+task_id = "eval-00001"
+doc_type = "chat_log"
+difficulty = 2
+gold_summary = "chat log for Redwood redesign listing 2 action items owned by Jin."
+
+[verifier]
+timeout_sec = 60

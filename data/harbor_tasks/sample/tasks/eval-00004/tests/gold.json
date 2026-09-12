@@ -1,0 +1,61 @@
+{
+  "gold_todos": [
+    {
+      "task": "Write release notes for Kestrel API",
+      "owner": "Sofia",
+      "due": null,
+      "priority": "high"
+    },
+    {
+      "task": "Triage open issues on Atlas migration",
+      "owner": "Dana",
+      "due": "2026-09-29",
+      "priority": "low"
+    },
+    {
+      "task": "Archive the stale schema for SSO integration",
+      "owner": "Priya",
+      "due": null,
+      "priority": "med"
+    },
+    {
+      "task": "Fix the flaky test suite tests",
+      "owner": "Dana",
+      "due": "2026-09-28",
+      "priority": "med"
+    },
+    {
+      "task": "Chase approvals for the mobile checkout onboarding doc",
+      "owner": "Imani",
+      "due": "2026-09-14",
+      "priority": "low"
+    }
+  ],
+  "source_entities": {
+    "names": [
+      "Alice Chen",
+      "Bob",
+      "Carlos Mendez",
+      "Dana",
+      "Diego",
+      "Elena Petrova",
+      "Grace",
+      "Hannah Kim",
+      "Imani",
+      "Kenji",
+      "Lena",
+      "Marcus Webb",
+      "Priya",
+      "Rosa",
+      "Sofia",
+      "Tom",
+      "Yuki Tanaka"
+    ],
+    "dates": [
+      "2026-09-14",
+      "2026-09-28",
+      "2026-09-29"
+    ]
+  },
+  "doc": "# SSO integration sync notes\nDate: 2026-09-14\nAttendees: Tom, Elena Petrova, Diego, Marcus Webb\n\n- Lost and found has accumulated three hoodies.\n- Dana: Triage open issues on Atlas migration by 2026-09-29 (low priority).\n- The SSO integration status page was green all week.\n- Sofia: Write release notes for Kestrel API (urgent).\n- Parking lot B will be resurfaced next week.\n- Tom shared photos from the offsite.\n- Dana: Fix the flaky test suite tests by 2026-09-28.\n- The Payments v2 mural in the lobby is almost finished.\n- Imani: Chase approvals for the mobile checkout onboarding doc by 2026-09-14 (low priority).\n- Priya: Archive the stale schema for SSO integration.\n- The fantasy football draft is scheduled for Thursday.\n- Kenji shared photos from the offsite.\n- The rooftop garden needs volunteers this Saturday.\n- Rosa shared photos from the offsite.\n- Elena Petrova shared photos from the offsite.\n- Sofia gave a lightning talk on sourdough starters.\n- The fantasy football draft is scheduled for Thursday.\n- The new espresso blend got mixed reviews.\n- The book club is reading a sci-fi novel this month.\n- Lunch is at noon tomorrow in the courtyard.\n- The onboarding revamp mural in the lobby is almost finished.\n- Bob is organizing a charity 5k in October.\n- Marcus Webb gave a lightning talk on sourdough starters.\n- Priya is organizing a charity 5k in October.\n"
+}

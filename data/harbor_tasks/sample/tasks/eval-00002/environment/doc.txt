@@ -1,0 +1,28 @@
+# Payments v2 sync notes
+Date: 2026-09-14
+Attendees: Jin, Pavel, Victor, Bob
+
+- Lunch is at noon tomorrow in the courtyard.
+- Please migrate the test suite used by Payments v2 by 2026-10-13 (when you get a chance).
+- The rooftop garden needs volunteers this Saturday.
+- Marcus Webb: Review the PRD before the Nimbus rollout launch (low priority).
+- Victor: Document the Falcon dashboard rollback plan by 2026-09-18.
+- Jin is organizing a charity 5k in October.
+- Yoga class moved to Tuesdays at 5pm.
+- Alice Chen gave a lightning talk on sourdough starters.
+- Lena baked cookies for the whole floor.
+- Someone left an umbrella in the break room.
+- Victor: Confirm budget for SSO integration by 2026-09-24.
+- The fantasy football draft is scheduled for Thursday.
+- IT will reboot the printers overnight.
+- Dana shared photos from the offsite.
+- Lunch is at noon tomorrow in the courtyard.
+- Lunch is at noon tomorrow in the courtyard.
+- The book club is reading a sci-fi novel this month.
+- The Redwood redesign trophy shelf needs dusting.
+- The fantasy football draft is scheduled for Thursday.
+- Lunch is at noon tomorrow in the courtyard.
+- The newsletter featured Jin this week.
+- The newsletter featured Dana this week.
+- Priya shared photos from the offsite.
+- Lunch is at noon tomorrow in the courtyard.

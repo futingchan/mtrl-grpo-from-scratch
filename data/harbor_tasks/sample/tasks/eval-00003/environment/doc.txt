@@ -1,0 +1,24 @@
+# onboarding revamp sync notes
+Date: 2026-09-14
+Attendees: Tom, Marcus Webb, Alice Chen, Kenji
+
+- Sofia: Audit access to the SSO integration playbook by 2026-10-13 (when you get a chance).
+- Diego: Send the dashboard for Q3 pricing page to the team by 2026-09-25.
+- The Kestrel API mural in the lobby is almost finished.
+- Pavel: Validate the onboarding doc numbers for Falcon dashboard by 2026-10-05 (when you get a chance).
+- The onboarding revamp mural in the lobby is almost finished.
+- Bob: Summarize feedback on Q3 pricing page by 2026-09-14 (urgent).
+- The new espresso blend got mixed reviews.
+- Bob: Review the runbook before the onboarding revamp launch by 2026-10-09 (when you get a chance).
+- Fatima: Send the onboarding doc for SSO integration to the team by 2026-09-15 (urgent).
+- The SSO integration mural in the lobby is almost finished.
+- The fantasy football draft is scheduled for Thursday.
+- Carlos Mendez is organizing a charity 5k in October.
+- Parking lot B will be resurfaced next week.
+- Reminder that Friday is a company holiday.
+- Grace adopted a rescue dog last weekend.
+- The Payments v2 team won the trivia night.
+- Someone left an umbrella in the break room.
+- Ravi baked cookies for the whole floor.
+- Omar shared photos from the offsite.
+- Someone left an umbrella in the break room.

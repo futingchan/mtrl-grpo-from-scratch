@@ -1,0 +1,8 @@
+[metadata]
+task_id = "eval-00004"
+doc_type = "meeting_notes"
+difficulty = 5
+gold_summary = "meeting notes on Atlas migration: 5 todos, led by Sofia, Dana, Priya."
+
+[verifier]
+timeout_sec = 60

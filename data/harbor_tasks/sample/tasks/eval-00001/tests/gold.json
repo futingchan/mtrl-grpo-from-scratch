@@ -1,0 +1,48 @@
+{
+  "gold_todos": [
+    {
+      "task": "Prepare a demo of Falcon dashboard",
+      "owner": "Jin",
+      "due": null,
+      "priority": "med"
+    },
+    {
+      "task": "Summarize feedback on Q3 pricing page",
+      "owner": null,
+      "due": "2026-09-29",
+      "priority": "med"
+    }
+  ],
+  "source_entities": {
+    "names": [
+      "Alice Chen",
+      "Bob",
+      "Carlos Mendez",
+      "Dana",
+      "Diego",
+      "Elena Petrova",
+      "Fatima",
+      "Grace",
+      "Hannah Kim",
+      "Imani",
+      "Jin",
+      "Kenji",
+      "Lena",
+      "Nadia",
+      "Omar",
+      "Pavel",
+      "Priya",
+      "Ravi",
+      "Rosa",
+      "Sofia",
+      "Tom",
+      "Victor",
+      "Yuki Tanaka"
+    ],
+    "dates": [
+      "2026-09-14",
+      "2026-09-29"
+    ]
+  },
+  "doc": "[10:55] Bob: Lunch is at noon tomorrow in the courtyard.\n[10:57] Jin: Prepare a demo of Falcon dashboard.\n[10:59] Dana: Kenji baked cookies for the whole floor.\n[11:00] Grace: The Kestrel API trophy shelf needs dusting.\n[11:03] Victor: Tom mentioned the coffee machine on floor 3 is broken again.\n[11:04] Jin: Please summarize feedback on Q3 pricing page by 2026-09-29.\n[11:08] Pavel: Yoga class moved to Tuesdays at 5pm.\n[11:09] Hannah Kim: IT will reboot the printers overnight.\n[11:10] Carlos Mendez: Someone left an umbrella in the break room.\n[11:14] Jin: Lost and found has accumulated three hoodies.\n[11:15] Bob: The Nimbus rollout trophy shelf needs dusting.\n[11:16] Alice Chen: The mobile checkout status page was green all week.\n[11:19] Yuki Tanaka: The Nimbus rollout status page was green all week.\n[11:23] Bob: Lunch is at noon tomorrow in the courtyard.\n[11:27] Fatima: Jin mentioned the coffee machine on floor 3 is broken again.\n[11:28] Hannah Kim: The book club is reading a sci-fi novel this month.\n[11:32] Elena Petrova: Pavel adopted a rescue dog last weekend.\n[11:35] Diego: Pavel gave a lightning talk on sourdough starters.\n[11:38] Lena: Lost and found has accumulated three hoodies.\n[11:40] Rosa: The new espresso blend got mixed reviews.\n[11:41] Alice Chen: Omar is organizing a charity 5k in October.\n[11:45] Dana: Ravi is organizing a charity 5k in October.\n[11:48] Omar: The onboarding revamp trophy shelf needs dusting.\n[11:51] Alice Chen: Lost and found has accumulated three hoodies.\n[11:55] Jin: Priya finally beat the office ping-pong champion.\n"
+}

@@ -1,0 +1,8 @@
+[metadata]
+task_id = "eval-00002"
+doc_type = "meeting_notes"
+difficulty = 4
+gold_summary = "meeting notes on inventory sync: 4 todos, led by Marcus Webb, Victor, Victor."
+
+[verifier]
+timeout_sec = 60

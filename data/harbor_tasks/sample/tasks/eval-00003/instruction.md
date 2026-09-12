@@ -1,0 +1,1 @@
+Read /workdir/doc.txt. Produce STRICT JSON {summary: <=60 words, todos: [{task, owner (name or null), due (YYYY-MM-DD or null), priority (high|med|low)}]}. Write it to /workdir/answer.txt (via the submit tool when available). No extra keys.

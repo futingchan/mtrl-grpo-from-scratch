@@ -1,0 +1,56 @@
+{
+  "gold_todos": [
+    {
+      "task": "Review the PRD before the Nimbus rollout launch",
+      "owner": "Marcus Webb",
+      "due": null,
+      "priority": "low"
+    },
+    {
+      "task": "Document the Falcon dashboard rollback plan",
+      "owner": "Victor",
+      "due": "2026-09-18",
+      "priority": "med"
+    },
+    {
+      "task": "Migrate the test suite used by Payments v2",
+      "owner": null,
+      "due": "2026-10-13",
+      "priority": "low"
+    },
+    {
+      "task": "Confirm budget for SSO integration",
+      "owner": "Victor",
+      "due": "2026-09-24",
+      "priority": "med"
+    }
+  ],
+  "source_entities": {
+    "names": [
+      "Alice Chen",
+      "Bob",
+      "Carlos Mendez",
+      "Dana",
+      "Diego",
+      "Hannah Kim",
+      "Imani",
+      "Jin",
+      "Lena",
+      "Marcus Webb",
+      "Nadia",
+      "Pavel",
+      "Priya",
+      "Rosa",
+      "Tom",
+      "Victor",
+      "Yuki Tanaka"
+    ],
+    "dates": [
+      "2026-09-14",
+      "2026-09-18",
+      "2026-09-24",
+      "2026-10-13"
+    ]
+  },
+  "doc": "# Payments v2 sync notes\nDate: 2026-09-14\nAttendees: Jin, Pavel, Victor, Bob\n\n- Lunch is at noon tomorrow in the courtyard.\n- Please migrate the test suite used by Payments v2 by 2026-10-13 (when you get a chance).\n- The rooftop garden needs volunteers this Saturday.\n- Marcus Webb: Review the PRD before the Nimbus rollout launch (low priority).\n- Victor: Document the Falcon dashboard rollback plan by 2026-09-18.\n- Jin is organizing a charity 5k in October.\n- Yoga class moved to Tuesdays at 5pm.\n- Alice Chen gave a lightning talk on sourdough starters.\n- Lena baked cookies for the whole floor.\n- Someone left an umbrella in the break room.\n- Victor: Confirm budget for SSO integration by 2026-09-24.\n- The fantasy football draft is scheduled for Thursday.\n- IT will reboot the printers overnight.\n- Dana shared photos from the offsite.\n- Lunch is at noon tomorrow in the courtyard.\n- Lunch is at noon tomorrow in the courtyard.\n- The book club is reading a sci-fi novel this month.\n- The Redwood redesign trophy shelf needs dusting.\n- The fantasy football draft is scheduled for Thursday.\n- Lunch is at noon tomorrow in the courtyard.\n- The newsletter featured Jin this week.\n- The newsletter featured Dana this week.\n- Priya shared photos from the offsite.\n- Lunch is at noon tomorrow in the courtyard.\n"
+}

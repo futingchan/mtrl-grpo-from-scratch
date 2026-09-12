@@ -1,0 +1,8 @@
+[metadata]
+task_id = "eval-00000"
+doc_type = "meeting_notes"
+difficulty = 5
+gold_summary = "meeting notes for inventory sync listing 5 action items owned by Kenji, Victor, Pavel."
+
+[verifier]
+timeout_sec = 60

@@ -1,0 +1,65 @@
+{
+  "gold_todos": [
+    {
+      "task": "Onboard the new hire to onboarding revamp",
+      "owner": "Kenji",
+      "due": "2026-09-30",
+      "priority": "med"
+    },
+    {
+      "task": "Renew the license for the Payments v2 cost report",
+      "owner": "Victor",
+      "due": null,
+      "priority": "med"
+    },
+    {
+      "task": "Book a room for the onboarding revamp kickoff",
+      "owner": null,
+      "due": "2026-10-07",
+      "priority": "med"
+    },
+    {
+      "task": "Schedule a review of onboarding revamp",
+      "owner": "Pavel",
+      "due": "2026-10-02",
+      "priority": "high"
+    },
+    {
+      "task": "Validate the slide deck numbers for inventory sync",
+      "owner": null,
+      "due": "2026-09-14",
+      "priority": "med"
+    }
+  ],
+  "source_entities": {
+    "names": [
+      "Alice Chen",
+      "Bob",
+      "Carlos Mendez",
+      "Dana",
+      "Diego",
+      "Elena Petrova",
+      "Fatima",
+      "Hannah Kim",
+      "Jin",
+      "Kenji",
+      "Lena",
+      "Marcus Webb",
+      "Nadia",
+      "Pavel",
+      "Priya",
+      "Ravi",
+      "Rosa",
+      "Sofia",
+      "Tom",
+      "Victor"
+    ],
+    "dates": [
+      "2026-09-14",
+      "2026-09-30",
+      "2026-10-02",
+      "2026-10-07"
+    ]
+  },
+  "doc": "# mobile checkout sync notes\nDate: 2026-09-14\nAttendees: Rosa, Bob, Diego, Ravi\n\n- Please book a room for the onboarding revamp kickoff by 2026-10-07.\n- The Falcon dashboard team won the trivia night.\n- Dana gave a lightning talk on sourdough starters.\n- Pavel: Schedule a review of onboarding revamp by 2026-10-02 (ASAP).\n- Lost and found has accumulated three hoodies.\n- The fantasy football draft is scheduled for Thursday.\n- The fantasy football draft is scheduled for Thursday.\n- Please validate the slide deck numbers for inventory sync by 2026-09-14.\n- Kenji: Onboard the new hire to onboarding revamp by 2026-09-30.\n- Victor: Renew the license for the Payments v2 cost report.\n- Bike to Work day is coming up; helmets recommended.\n- IT will reboot the printers overnight.\n- Bike to Work day is coming up; helmets recommended.\n- Nadia finally beat the office ping-pong champion.\n- Kenji baked cookies for the whole floor.\n- Yoga class moved to Tuesdays at 5pm.\n- Jin shared photos from the offsite.\n- Priya mentioned the coffee machine on floor 3 is broken again.\n- The fantasy football draft is scheduled for Thursday.\n- Rosa shared photos from the offsite.\n- The new espresso blend got mixed reviews.\n- Fatima adopted a rescue dog last weekend.\n- Marcus Webb baked cookies for the whole floor.\n- Hannah Kim shared photos from the offsite.\n"
+}

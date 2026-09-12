@@ -1,0 +1,8 @@
+[metadata]
+task_id = "eval-00003"
+doc_type = "meeting_notes"
+difficulty = 6
+gold_summary = "meeting notes about Atlas migration: 6 action items; key owners Diego, Pavel, Bob."
+
+[verifier]
+timeout_sec = 60
