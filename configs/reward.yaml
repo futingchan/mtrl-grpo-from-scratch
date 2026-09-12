@@ -1,0 +1,4 @@
+weights: {schema: 1.0, recall: 2.0, prec: 1.0, owner: 0.5, len: 0.5, hall: 1.0, judge: 0.0}
+matcher: f1          # f1 | cosine
+match_threshold: 0.5 # f1 threshold; use 0.75 for cosine
+summary_max_words: 60

@@ -1,0 +1,11 @@
+model: Qwen/Qwen2.5-0.5B-Instruct
+dtype: float32
+seed: 0
+data: {train: data/train.parquet, eval: data/eval.parquet, eval_n: 32, eval_batch_size: 8}
+lora: {r: 16, alpha: 32, dropout: 0.05, target_modules: [q_proj, k_proj, v_proj, o_proj]}
+grpo: {steps: 300, batch_prompts: 2, num_generations: 4, max_prompt_length: 1024, max_completion_length: 256, temperature: 1.0, epsilon: 0.2, beta: 0.04, lr: 1.0e-5, grad_checkpointing: true}
+reward_config: configs/reward.yaml
+out_dir: runs/tier_a
+out_dir_trl: runs/tier_a_trl
+log_every: 1
+save_every: 50
