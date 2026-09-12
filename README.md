@@ -59,26 +59,45 @@ The dashboard (`viz/`, React+TS, fully static and deterministic) has five
 panels:
 
 1. **The loop** (the GIF above) — a 1-d toy policy visibly concentrating
-   probability mass on high-reward completions.
+   probability mass on high-reward completions. All 8 completions come from
+   the *same* prompt — that shared prompt is the "group" in group-relative.
+   Watch the advantage bars flip green/red and the policy bars converge on
+   the short-and-correct completions over iterations.
 
 2. **Gridworld** — RL with no LLM at all: a tabular policy you can watch
-   learn. The grounding case.
+   learn. The grounding case. In the capture, returns hover near −1 while
+   the policy wanders, then jump to ~+0.5 once it stumbles onto the goal
+   path — and the right/down arrows along that route visibly brighten. The
+   running-mean baseline `b` is the same trick GRPO's group mean plays,
+   applied over time instead of over siblings.
 
    <img src="docs/panel-2-gridworld.png" width="720" alt="REINFORCE on gridworld">
 
 3. **PPO vs GRPO vs DPO** — the *same* batch of completions and rewards fed
    through all three update rules, with sliders for clip ε and KL β.
-   (Captured here with the real batch from the training run.)
+   (Captured here with the real batch from the training run.) The contrast
+   is the lesson: PPO's stand-in critic produces tiny ±0.01 advantages;
+   GRPO's group standardization stretches the same rewards to −2.11/+1.00;
+   DPO sits at a flat 0.69 because it sees preference pairs, not rewards.
+   GRPO amplifies intra-group differences — powerful when the group has
+   spread, degenerate when every rollout scores the same.
 
    <img src="docs/panel-3-update-comparison.png" width="720" alt="PPO vs GRPO vs DPO on one batch">
 
 4. **Reward shaping** — reward = correctness − λ·tokens; slide λ and watch
-   which completions win.
+   which completions win. In this real batch every completion was already
+   correct — so at λ=0.5 the ranking is decided entirely by length, and the
+   shortest answer (#3, 97 tokens) takes the top advantage (+2.11). Reward
+   design *is* policy design.
 
    <img src="docs/panel-4-reward-shaping.png" width="720" alt="reward shaping with lambda slider">
 
-5. **The real run** — the actual metrics from the training run in this repo
-   (`viz/dist/run.json` is the genuine output, not a mock).
+5. **Training results** — the actual metrics from the training run in this
+   repo (`viz/dist/run.json`). The four curves tell the whole story in
+   miniature: reward climbs, `schema_ok` saturates, `completion_len`
+   shrinks ~190→130 as rambling stops paying, and KL rises then plateaus
+   near 0.02 nats. Same ordering the eval table shows: format first, then
+   content.
 
    <img src="docs/panel-5-training-run.png" width="720" alt="real GRPO training curves">
 
