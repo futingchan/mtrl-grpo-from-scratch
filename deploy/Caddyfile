@@ -1,0 +1,8 @@
+# Serve the built dashboard on port 80.
+# To enable HTTPS: create a DNS A record for your domain pointing at the VM's
+# public IP, then run `deploy.sh <host> your.domain` — Caddy gets the cert.
+:80 {
+	root * /var/www/grpo
+	file_server
+	encode gzip
+}
