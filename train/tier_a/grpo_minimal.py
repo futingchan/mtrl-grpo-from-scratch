@@ -123,7 +123,7 @@ def main() -> None:
         print(f"[eval {tag}] {metrics}")
         return metrics
 
-    run_eval("before")
+    eval_before = run_eval("before")
 
     n_rows = len(spec.train_dataset)
     B, G = gcfg["batch_prompts"], gcfg["num_generations"]
@@ -196,7 +196,10 @@ def main() -> None:
         # per-sequence mean log-ratio (x = logp_ref - logp_new) for the viz batch
         x_tok = (logp_ref - logp_new.detach()) * mask
         seq_x = (x_tok.sum(1) / comp_lens.clamp(min=1)).tolist()
-        logger.set_sample_batch(comp_lens.tolist(), schemas, seq_x, rewards)
+        # first prompt's group only: the viz batch must be one prompt's G samples
+        logger.set_sample_batch(
+            comp_lens[:G].tolist(), schemas[:G], seq_x[:G], rewards[:G]
+        )
         logger.write_samples(
             step,
             [
@@ -227,7 +230,8 @@ def main() -> None:
             model.save_pretrained(out_dir / f"ckpt-{step}")
 
     model.save_pretrained(out_dir / "ckpt-final")
-    run_eval("after")
+    eval_after = run_eval("after")
+    logger.set_eval(eval_before, eval_after)
     logger.close()
 
 

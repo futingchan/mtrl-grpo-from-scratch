@@ -159,6 +159,7 @@ class RunLogger:
         self.out_dir.mkdir(parents=True, exist_ok=True)
         self.steps: list[dict] = []
         self.sample_batch: dict | None = None
+        self.eval: dict | None = None
         self._metrics = open(self.out_dir / "metrics.jsonl", "a")  # noqa: SIM115 - long-lived handle
         self._samples = open(self.out_dir / "samples.jsonl", "a")  # noqa: SIM115
 
@@ -191,17 +192,13 @@ class RunLogger:
         logratio: list,
         rewards: list,
     ) -> None:
-        def fix(xs, fill):
-            xs = list(xs)[:8]
-            while len(xs) < 8:
-                xs.append(fill)
-            return xs
-
+        """Store one prompt's group for the viz. Callers pass a single group
+        (G entries), not the flattened B*G batch."""
         self.sample_batch = {
-            "lengths": [int(x) for x in fix(lengths, 0)],
-            "correct": [int(x) for x in fix(correct, 0)],
-            "logratio": [float(x) for x in fix(logratio, 0.0)],
-            "rewards": [float(x) for x in fix(rewards, 0.0)],
+            "lengths": [int(x) for x in lengths],
+            "correct": [int(x) for x in correct],
+            "logratio": [float(x) for x in logratio],
+            "rewards": [float(x) for x in rewards],
         }
         self._write_run_json()
 
@@ -210,8 +207,16 @@ class RunLogger:
             self._samples.write(json.dumps({"step": step, **s}) + "\n")
         self._samples.flush()
 
+    def set_eval(self, before: dict, after: dict) -> None:
+        self.eval = {"before": before, "after": after}
+        self._write_run_json()
+
     def _write_run_json(self) -> None:
-        payload = {"steps": self.steps, "sample_batch": self.sample_batch}
+        payload = {
+            "steps": self.steps,
+            "sample_batch": self.sample_batch,
+            "eval": self.eval,
+        }
         (self.out_dir / "run.json").write_text(json.dumps(payload))
 
     def close(self) -> None:

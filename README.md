@@ -15,8 +15,9 @@ modern commodity hardware.
 ![the RL loop, animated](docs/loop-demo.gif)
 
 *The dashboard's first panel: a toy policy over 8 completions, iterating
-sample → reward → advantage → update. Watch the real thing at
-`python3 -m http.server 4173 -d viz/dist` → http://localhost:4173*
+sample → reward → advantage → update. Live demo:
+https://futingchan.github.io/mtrl-grpo-from-scratch/ (GitHub Pages, built
+from `viz/` in this repo)*
 
 ## The concepts
 
@@ -80,8 +81,8 @@ panels:
 3. **PPO vs GRPO vs DPO**: the *same* batch of completions and rewards fed
    through all three update rules, with sliders for clip ε and KL β. The
    screenshot uses the real batch from the training run, and the contrast
-   is the lesson. PPO's stand-in critic produces tiny ±0.01 advantages.
-   GRPO's group standardization stretches the same rewards out to −2.11
+   is the lesson. PPO's stand-in critic produces small ±0.4 advantages.
+   GRPO's group standardization stretches the same rewards out to −1.95
    and +1.00. DPO sits at a flat 0.69 loss because it only ever sees
    preference pairs, not rewards. The takeaway is that GRPO amplifies
    intra-group differences, which is powerful when the group has spread
@@ -93,7 +94,7 @@ panels:
    (`reward = correctness − λ·tokens`), and the λ slider lets you watch
    which completions win. In this real batch every completion was already
    correct, so at λ=0.5 the ranking is decided entirely by length, and the
-   shortest answer (#3, 97 tokens) takes the top advantage (+2.11). Reward
+   shortest answer (#0, 116 tokens) takes the top advantage (+1.31). Reward
    design *is* policy design.
 
    <img src="docs/panel-4-reward-shaping.png" width="720" alt="reward shaping with lambda slider">
@@ -278,10 +279,11 @@ uv run python -m train.tier_a.grpo_minimal --config configs/tier_a_grpo.yaml \
   --set data.eval_n=2 --device cpu
 ```
 
-Dashboard dev/build:
+Dashboard dev/build (serves at http://localhost:4173):
 
 ```bash
-cd viz && npm install && npm run test && npm run build
+cd viz && npm install && npm run test && npm run build && npm run preview
+# or serve the committed bundle directly: python3 -m http.server 4173 -d viz/dist
 ```
 
 License: Apache-2.0.

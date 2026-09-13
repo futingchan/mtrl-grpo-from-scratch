@@ -157,6 +157,7 @@ def main() -> None:
         device,
     )
     logger.set_sample_batch(**batch)
+    logger.set_eval(before, metrics)
     logger.close()
 
 
