@@ -3,6 +3,8 @@
 This repo is a working, from-scratch implementation of RLVR (reinforcement
 learning with *verifiable rewards*) applied to a small language model. The code includes both a training recipe for RLVR and a browser dashboard that animates what the algorithm is doing at each step.
 
+**Live demo: https://futingchan.github.io/mtrl-grpo-from-scratch/** — a five-panel interactive walkthrough of the loop, built from `viz/` in this repo and served by GitHub Pages.
+
 The goal is to demonstrate the full loop end to end, with minimal framework
 dependency, implementing the basic pieces from scratch where it improves
 understanding. The flow, at a high level: prompts go in, the policy samples
