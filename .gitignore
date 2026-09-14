@@ -223,6 +223,8 @@ runs/
 node_modules/
 data/harbor_tasks/generated/
 
+
 # viz: commit the built bundle and the app lib (lib/ above targets Python packaging)
 !viz/dist/
 !viz/src/lib/
+tmp/

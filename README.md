@@ -1,5 +1,11 @@
 # Multi-turn Reinforcement Learning: GRPO from Scratch
 
+**TL;DR:** A from-scratch GRPO/RLVR loop — no value network, no reward
+model, deterministic grading — trained 300 steps on an 8-year-old 11 GB
+GPU and took `schema_ok` from **0.22 → 1.00**, todo recall **0.11 →
+0.44**, mean reward **0.69 → 3.36**, with KL plateauing at ~0.02 nats.
+Plus a browser dashboard that animates the algorithm step by step.
+
 This repo is a working, from-scratch implementation of RLVR (reinforcement
 learning with *verifiable rewards*) applied to a small language model. The code includes both a training recipe for RLVR and a browser dashboard that animates what the algorithm is doing at each step.
 
